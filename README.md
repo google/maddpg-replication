@@ -4,7 +4,15 @@ This is an attempted replication of "Multi-Agent Actor-Critic for Mixed Cooperat
 
 This is not an official Google product.
 
-# Invocation
+# Dependencies
 
-Run `python main.py --num-episodes=5000 --exp-name=test` to test the script.
+Python packages:
+  * tensorflow
+  * gym
+  * multiagent-particle-envs
+  * maddpg
+  * Pillow
+
+Linux packages:
+  * ffmpeg
 

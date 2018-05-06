@@ -13,10 +13,7 @@
 # limitations under the License.
 
 import sys
-sys.path.append('../maddpg')
 sys.path.append('../maddpg/experiments')
-sys.path.append('../gym')
-sys.path.append('../multiagent-particle-envs')
 
 import train
 import os
@@ -25,5 +22,10 @@ import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 arglist = train.parse_args()
+arglist.num_episodes = 1  # 5000
+arglist.exp_name = "test"
+arglist.save_dir = "./policy/"
+arglist.renders_dir = "./renders/"
+arglist.display = True
 train.train(arglist)
 
