@@ -28,7 +28,7 @@ def parse_args():
     parser.add_argument("--num-units", type=int, default=64, help="number of units in the mlp")
     # Checkpointing
     parser.add_argument("--exp-name", type=str, default="exp_name", help="name of the experiment")
-    parser.add_argument("--save-dir", type=str, default="../../../experiments/", help="directory in which training state and model should be saved")
+    parser.add_argument("--save-dir", type=str, default="", help="directory in which training state and model should be saved")
     parser.add_argument("--save-rate", type=int, default=1000, help="save model once every time this many episodes are completed")
     parser.add_argument("--render-rate", type=int, default=1000, help="render episode once every time this many episodes are completed")
     parser.add_argument("--load-dir", type=str, default="", help="directory in which training state and model are loaded")
@@ -84,11 +84,12 @@ def render(env, filepath, episode_step, stitch=False):
         subprocess.run(["ffmpeg", "-v", "warning", "-r", "10", "-i", filepath + ".%02d.bmp", "-vcodec", "mpeg4", "-y", filepath + ".mp4"], shell=False, check=True)
 
 def train(arglist):
-    try:
-        os.stat(arglist.save_dir + arglist.exp_name)
-        raise Exception("Directory already exists: " + arglist.exp_name)
-    except FileNotFoundError:
-        os.mkdir(arglist.save_dir + arglist.exp_name)
+    if not arglist.benchmark:
+        try:
+            os.stat(arglist.save_dir)
+            raise Exception("Directory already exists: " + arglist.save_dir)
+        except FileNotFoundError:
+            os.mkdir(arglist.save_dir)
 
     # Suppress AVX/FMA warning
     os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
@@ -141,9 +142,9 @@ def train(arglist):
                 episode_rewards[-1] += rew
                 agent_rewards[i][-1] += rew
 
-            if len(episode_rewards) % arglist.render_rate == 0:
+            if not arglist.benchmark and len(episode_rewards) % arglist.render_rate == 0:
                 render(env,
-                       arglist.save_dir + arglist.exp_name + ("/episode_%08d" % len(episode_rewards)),
+                       arglist.save_dir + ("episode_%08d" % len(episode_rewards)),
                        episode_step,
                        terminal)
                 
@@ -155,7 +156,7 @@ def train(arglist):
                     a.append(0)
                 agent_info.append([[]])
                 if len(episode_rewards) % arglist.render_rate == 0:
-                    render(env, arglist.save_dir + arglist.exp_name + ("/episode_%08d" % len(episode_rewards)), 0)
+                    render(env, arglist.save_dir + ("episode_%08d" % len(episode_rewards)), 0)
 
             # increment global step counter
             train_step += 1
@@ -165,7 +166,7 @@ def train(arglist):
                 for i, info in enumerate(info_n):
                     agent_info[-1][i].append(info_n['n'])
                 if train_step > arglist.benchmark_iters and (done or terminal):
-                    file_name = arglist.save_dir + arglist.exp_name + '/benchmark.pkl'
+                    file_name = arglist.save_dir + 'benchmark.pkl'
                     print('Finished benchmarking, now saving...')
                     with open(file_name, 'wb') as fp:
                         pickle.dump(agent_info[:-1], fp)
@@ -187,7 +188,7 @@ def train(arglist):
 
             # save model, display training output
             if terminal and (len(episode_rewards) % arglist.save_rate == 0):
-                U.save_state(arglist.save_dir + arglist.exp_name + "/", saver=saver)
+                U.save_state(arglist.save_dir, saver=saver)
                 # print statement depends on whether or not there are adversaries
                 if num_adversaries == 0:
                     print("steps: {}, episodes: {}, mean episode reward: {}, time: {}".format(
@@ -204,10 +205,10 @@ def train(arglist):
 
             # saves final episode reward for plotting training curve later
             if len(episode_rewards) > arglist.num_episodes:
-                rew_file_name = arglist.save_dir + arglist.exp_name + '/rewards.pkl'
+                rew_file_name = arglist.save_dir + 'rewards.pkl'
                 with open(rew_file_name, 'wb') as fp:
                     pickle.dump(final_ep_rewards, fp)
-                agrew_file_name = arglist.save_dir + arglist.exp_name + '/agrewards.pkl'
+                agrew_file_name = arglist.save_dir + 'agrewards.pkl'
                 with open(agrew_file_name, 'wb') as fp:
                     pickle.dump(final_ep_ag_rewards, fp)
                 print('...Finished total of {} episodes.'.format(len(episode_rewards)))

@@ -13,7 +13,7 @@
 # limitations under the License.
 
 . ../tensorflow/bin/activate
-xvfb-run -s "-screen 0 1400x900x24" -a python third_party/maddpg/experiments/train.py --save-dir=experiments/ --exp-name=$1
+xvfb-run -s "-screen 0 1400x900x24" -a python third_party/maddpg/experiments/train.py --save-dir=experiments/$1/ --load-dir=experiments/$1/ --exp-name=$1 --scenario=simple_adversary --num-episodes=60000 --benchmark-iters=25050 #--benchmark
 deactivate
 # ffmpeg -r 10 -i renders/test.%02d.bmp -vcodec mpeg4 -y renders/test.mp4
 
