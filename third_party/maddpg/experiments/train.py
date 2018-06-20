@@ -82,8 +82,11 @@ def render(env, filepath, episode_step, stitch=False):
     Image.fromarray(frame).save(filepath + "." + ("%02d" % episode_step) + ".bmp")
     if stitch:
         subprocess.run(["ffmpeg", "-v", "warning", "-r", "10", "-i", filepath + ".%02d.bmp", "-vcodec", "mpeg4", "-y", filepath + ".mp4"], shell=False, check=True)
+        subprocess.run(["rm -f " + filepath + ".*.bmp"], shell=True, check=True)
 
 def train(arglist):
+    if arglist.save_dir == "":
+            arglist.save_dir = "experiments/" + arglist.exp_name + "/"
     if not arglist.benchmark:
         try:
             os.stat(arglist.save_dir)
