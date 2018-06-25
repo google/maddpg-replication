@@ -1,6 +1,6 @@
 # maddpg-replication
 
-This is a replication of ["Multi-Agent Actor-Critic for Mixed Cooperative-Competitive Environments" (Lowe, Wu, Tamar, Harb, Abbeel, Mordatch 2017)](https://arxiv.org/abs/1706.02275). That paper introduced an algorithm called MADDPG (multi-agent deep deterministic policy gradient) for training multiple agents that can interact intelligently. The authors released [source code](https://github.com/openai/maddpg) for replicating the paper. This repository documents the process of running that code and the results.
+This is a partial replication of ["Multi-Agent Actor-Critic for Mixed Cooperative-Competitive Environments" (Lowe, Wu, Tamar, Harb, Abbeel, Mordatch 2017)](https://arxiv.org/abs/1706.02275). That paper introduced an algorithm called MADDPG (multi-agent deep deterministic policy gradient) for training multiple agents that can interact intelligently. The authors released [source code](https://github.com/openai/maddpg) for replicating the paper. This repository documents the process of running that code and the results.
 
 Although I (Nisan Stiennon) am affiliated with Google, this is not an official Google product.
 
@@ -53,7 +53,9 @@ Here are the experiments used in the Jupyter notebook:
 I used a [Google Compute Engine](https://cloud.google.com/) n1-standard-2 virtual machine (2 vCPUs, 7.5 GB memory). Install these packages:
 
 Python packages:
-  * tensorflow ([virtualenv installation with python 3](https://www.tensorflow.org/install/install_linux#InstallingVirtualenv))
+  * tensorflow
+    * ([virtualenv installation with python 3](https://www.tensorflow.org/install/install_linux#InstallingVirtualenv))
+    * I installed the other packages while in the virtual environment.
   * gym
   * multiagent-particle-envs
   * maddpg
@@ -68,7 +70,7 @@ Python packages:
 Linux packages:
   * ffmpeg
 
-Also clone this repo.
+Also clone this repo. run.sh assumes that this repo's top directory is a sibling directory to the tensorflow directory containing bin/activate.
 
 To run an experiment, edit [run.sh](run.sh) and adjust any command-line flags. Then, from this repo's top directory run `./run.sh <experiment_name>`, where <experiment_name> can be anything you like. This will create a new directory with that name under experiments/.
 
